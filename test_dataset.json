@@ -1,0 +1,254 @@
+[
+  {
+    "id": "Q01",
+    "question": "Users are getting logged out unexpectedly and API calls return a 401 error. What should I check first?",
+    "recommended answer": "Check client system clock synchronization for NTP drift, verify REFRESH_TOKEN_ENABLED is true, and clear browser local/session storage.",
+    "recommended documentation file": "auth_troubleshooting.md"
+  },
+  {
+    "id": "Q02",
+    "question": "How do I force sync user permissions via the CLI when they encounter a forbidden exception?",
+    "recommended answer": "Run the management command: python manage.py sync_permissions --user=<email>",
+    "recommended documentation file": "auth_troubleshooting.md"
+  },
+  {
+    "id": "Q03",
+    "question": "What happens if a user's NTP drift is greater than 5 minutes regarding their authentication tokens?",
+    "recommended answer": "An NTP drift greater than 5 minutes invalidates standard JSON Web Tokens (JWT), leading to expiration issues.",
+    "recommended documentation file": "auth_troubleshooting.md"
+  },
+  {
+    "id": "Q04",
+    "question": "API requests are hanging for 30 seconds and failing with a gateway timeout. How do I inspect active DB connections?",
+    "recommended answer": "Run the SQL query: SELECT count(*) FROM pg_stat_activity WHERE state = 'active';",
+    "recommended documentation file": "database_performance.md"
+  },
+  {
+    "id": "Q05",
+    "question": "What command can I use to restart the PgBouncer connection pool proxy when connections are maxed out?",
+    "recommended answer": "Run: sudo systemctl restart pgbouncer",
+    "recommended documentation file": "database_performance.md"
+  },
+  {
+    "id": "Q06",
+    "question": "Where should I modify the pool size parameters temporarily when handling database connection timeouts?",
+    "recommended answer": "Modify config/production.yaml under the database pool_size, max_overflow, and timeout keys.",
+    "recommended documentation file": "database_performance.md"
+  },
+  {
+    "id": "Q07",
+    "question": "A client application is receiving a 429 Too Many Requests response. How can I check their usage metrics in Redis?",
+    "recommended answer": "Run the Redis command: redis-cli GET rate_limit:<client_api_key>",
+    "recommended documentation file": "api_rate_limiting.md"
+  },
+  {
+    "id": "Q08",
+    "question": "Where do I update an enterprise partner's tier if they need a temporary rate limit exemption?",
+    "recommended answer": "Update their tier directly in the Kong API Gateway dashboard.",
+    "recommended documentation file": "api_rate_limiting.md"
+  },
+  {
+    "id": "Q09",
+    "question": "What programming pattern should customer support advise clients to implement to handle rate limiting gracefully?",
+    "recommended answer": "Instruct the client to implement exponential backoff retry logic in their integration scripts.",
+    "recommended documentation file": "api_rate_limiting.md"
+  },
+  {
+    "id": "Q10",
+    "question": "A customer upgraded their plan on the pricing page, but their account is still on the Free tier. Where should I check delivery logs?",
+    "recommended answer": "Go to Stripe Dashboard > Developers > Webhooks and check recent delivery logs for checkout.session.completed.",
+    "recommended documentation file": "billing_subscription_errors.md"
+  },
+  {
+    "id": "Q11",
+    "question": "How do I manually trigger a customer license sync using the backend admin command?",
+    "recommended answer": "Run the command: python manage.py resync_license --customer-email=<email>",
+    "recommended documentation file": "billing_subscription_errors.md"
+  },
+  {
+    "id": "Q12",
+    "question": "Which environment variable needs to match the active signing secret on the server when Stripe webhooks fail?",
+    "recommended answer": "The STRIPE_WEBHOOK_SECRET environment variable.",
+    "recommended documentation file": "billing_subscription_errors.md"
+  },
+  {
+    "id": "Q13",
+    "question": "Users are reporting a blank white screen with a Loading chunk failed error after a deployment. What instructions should I give them?",
+    "recommended answer": "Instruct them to perform a hard refresh (Ctrl + Shift + R on Windows, Cmd + Shift + R on Mac) to bypass service worker caches.",
+    "recommended documentation file": "frontend_ui_caching.md"
+  },
+  {
+    "id": "Q14",
+    "question": "How do we fix stale frontend JavaScript assets caused by CDN caching?",
+    "recommended answer": "Verify Cloudflare/CDN cache purge status for /static/js/*.js assets and ensure proper cache-control headers.",
+    "recommended documentation file": "frontend_ui_caching.md"
+  },
+  {
+    "id": "Q15",
+    "question": "What cache-control header settings should be explicitly configured on index.html?",
+    "recommended answer": "They should be explicitly set to no-cache, no-store, must-revalidate.",
+    "recommended documentation file": "frontend_ui_caching.md"
+  },
+  {
+    "id": "Q16",
+    "question": "A support container exited unexpectedly with exit code 137. How do I inspect its exit history in Docker?",
+    "recommended answer": "Run: docker inspect <container_name> --format='{{.State.ExitCode}}'",
+    "recommended documentation file": "container_deployment.md"
+  },
+  {
+    "id": "Q17",
+    "question": "How do I check Linux kernel logs for Out-Of-Memory events?",
+    "recommended answer": "Run: dmesg -T | grep -i oom",
+    "recommended documentation file": "container_deployment.md"
+  },
+  {
+    "id": "Q18",
+    "question": "Where can I increase the memory limit for containers that crash due to OOM errors?",
+    "recommended answer": "Increase the memory limit under deploy.resources.limits in the docker-compose.yml file.",
+    "recommended documentation file": "container_deployment.md"
+  },
+  {
+    "id": "Q19",
+    "question": "What is the current stock price of Apple?",
+    "recommended answer": "I am sorry, but I can only provide assistance based on internal technical support documentation and software troubleshooting guidelines.",
+    "recommended documentation file": "none"
+  },
+  {
+    "id": "Q20",
+    "question": "How do I configure SSL certificates for an Nginx reverse proxy?",
+    "recommended answer": "I do not have documentation regarding Nginx SSL configuration in my current knowledge base.",
+    "recommended documentation file": "none"
+  },
+  {
+    "id": "Q21",
+    "question": "What is the company's policy on remote work and holiday allowances?",
+    "recommended answer": "I am designed for technical back-office support and do not have access to HR policies.",
+    "recommended documentation file": "none"
+  },
+  {
+    "id": "Q22",
+    "question": "A client is experiencing gateway timeouts (HTTP 504) and receiving 429 rate limit errors simultaneously during a heavy batch sync. Which two areas should I check?",
+    "recommended answer": "Check active database connections via pg_stat_activity or restart PgBouncer, and check Redis rate limit keys or adjust Kong gateway tiers.",
+    "recommended documentation file": ["database_performance.md", "api_rate_limiting.md"]
+  },
+  {
+    "id": "Q23",
+    "question": "After a new release, users complain of blank white screens (UI chunk load failures) and simultaneously our container crashed with exit code 137. What troubleshooting steps should I follow for both?",
+    "recommended answer": "For the UI error, advise hard refresh and check CDN cache purge. For the OOM container crash, check dmesg kernel logs and increase container memory limits in docker-compose.yml.",
+    "recommended documentation file": ["frontend_ui_caching.md", "container_deployment.md"]
+  },
+  {
+    "id": "Q24",
+    "question": "A customer cannot log in due to a 401 token expiration error, and their subscription webhook also failed to sync. How do I resolve both issues?",
+    "recommended answer": "For auth, check clock synchronization and REFRESH_TOKEN_ENABLED config. For billing, check Stripe webhook delivery logs and run python manage.py resync_license.",
+    "recommended documentation file": ["auth_troubleshooting.md", "billing_subscription_errors.md"]
+  },
+  {
+    "id": "Q25",
+    "question": "Our email notifications are failing and logs show an EMAIL_ERR_535_SMTP_AUTHENTICATION error. How do we fix this?",
+    "recommended documentation file": "email_notification_delivery.md",
+    "recommended answer": "Check if the SMTP password or API user key has expired or been rotated. Verify SMTP_USER and SMTP_PASSWORD env variables, check SendGrid/AWS SES logs, and test connectivity via telnet smtp.sendgrid.net 587."
+  },
+  {
+    "id": "Q26",
+    "question": "Password reset emails are not going through because the mail relay is throwing authentication credentials errors. What should I check?",
+    "recommended documentation file": "email_notification_delivery.md",
+    "recommended answer": "Inspect environment variables for SMTP configuration, verify mail provider account status for blocks or suspension, and run port connectivity tests."
+  },
+  {
+    "id": "Q27",
+    "question": "How do I diagnose SendGrid relay rejections or SMTP authentication drops on our server?",
+    "recommended documentation file": "email_notification_delivery.md",
+    "recommended answer": "Verify active credentials in SMTP settings, check provider dashboards for IP blacklisting, and test outbound port 587 connectivity using telnet."
+  },
+  {
+    "id": "Q28",
+    "question": "Users uploading large profile avatars get instant STORAGE_ERR_403_S3_ACCESS_DENIED errors. What is causing this?",
+    "recommended documentation file": "file_storage_upload_errors.md",
+    "recommended answer": "The IAM role assigned to the backend service lacks s3:PutObject permissions. Verify IAM policies and ensure STORAGE_BUCKET_NAME matches the target bucket."
+  },
+  {
+    "id": "Q29",
+    "question": "Why are cloud storage file uploads failing with S3 Forbidden exceptions?",
+    "recommended documentation file": "file_storage_upload_errors.md",
+    "recommended answer": "Check IAM task role permissions, verify bucket naming environment variables, and ensure bucket CORS rules allow PUT requests from the application origin."
+  },
+  {
+    "id": "Q30",
+    "question": "We are facing S3 access denied issues when users try to export and upload attachments. How can we resolve it?",
+    "recommended documentation file": "file_storage_upload_errors.md",
+    "recommended answer": "Review AWS instance profile IAM permissions for write access to the target bucket and check CORS policy setups."
+  },
+  {
+    "id": "Q31",
+    "question": "Async background jobs and report sync tasks are getting stuck, throwing WORKER_ERR_TASK_TIMEOUT errors. How do we fix this?",
+    "recommended documentation file": "background_worker_queue.md",
+    "recommended answer": "Tasks are exceeding the 300-second execution limit. Inspect active workers via Celery CLI, purge stalled queues if necessary, and increase task_soft_time_limit in configuration."
+  },
+  {
+    "id": "Q32",
+    "question": "Celery background worker tasks are freezing and hitting SoftTimeLimitExceeded. What steps should I take?",
+    "recommended documentation file": "background_worker_queue.md",
+    "recommended answer": "Check worker queues using Flower or CLI inspection commands, restart hanging worker instances, and adjust the time limit setting to a higher threshold."
+  },
+  {
+    "id": "Q33",
+    "question": "How do I inspect and clear stalled background worker queues when bulk data sync tasks stall?",
+    "recommended documentation file": "background_worker_queue.md",
+    "recommended answer": "Use 'celery -A core inspect active' to locate blocked jobs, restart workers with the purge flag, and check for long-running database queries inside the task logic."
+  },
+  {
+    "id": "Q34",
+    "question": "API clients are reporting SSL_ERR_CERT_DATE_INVALID security warnings. How do we renew the certificate?",
+    "recommended documentation file": "ssl_certificate_expiry.md",
+    "recommended answer": "The automated TLS renewal failed. Check expiration with OpenSSL, force manual renewal via certbot ('sudo certbot renew --force-renewal'), and reload Nginx."
+  },
+  {
+    "id": "Q35",
+    "question": "Load balancers are dropping secure connections because the domain TLS certificate has expired. What is the fix?",
+    "recommended documentation file": "ssl_certificate_expiry.md",
+    "recommended answer": "Run OpenSSL connection checks to verify dates, execute the Certbot force-renewal command on the proxy server, and reload the web server daemon."
+  },
+  {
+    "id": "Q36",
+    "question": "How do I troubleshoot Nginx SSL handshake errors and expired Let's Encrypt certificates?",
+    "recommended documentation file": "ssl_certificate_expiry.md",
+    "recommended answer": "Inspect certificate validity dates using openssl s_client, execute certbot renewal scripts, and reload Nginx configurations safely."
+  },
+  {
+    "id": "Q37",
+    "question": "Downloading multi-year audit logs causes server memory to spike and throws EXPORT_ERR_MEMORY_OVERFLOW. How do we fix it?",
+    "recommended documentation file": "audit_log_export_failure.md",
+    "recommended answer": "The system is loading too many rows into RAM at once. Instruct users to filter date ranges to under 30 days and ensure cursor pagination chunk size is set to 5,000 records."
+  },
+  {
+    "id": "Q38",
+    "question": "Why are compliance report exports crashing backend nodes with 100% RAM usage?",
+    "recommended documentation file": "audit_log_export_failure.md",
+    "recommended answer": "Avoid full table loads in export scripts. Implement database cursor pagination and advise admins to narrow export time filters."
+  },
+  {
+    "id": "Q39",
+    "question": "How do we prevent gateway timeouts and memory exhaustion when generating massive audit log CSVs?",
+    "recommended documentation file": "audit_log_export_failure.md",
+    "recommended answer": "Monitor memory usage with htop, enforce strict date range chunking on the frontend, and verify chunked pagination logic in export worker code."
+  },
+  {
+    "id": "Q40",
+    "question": "Third-party partner integrations are failing with WEBHOOK_ERR_INVALID_SIGNATURE errors. What is the cause?",
+    "recommended documentation file": "third_party_webhook_integration.md",
+    "recommended answer": "The raw request body stream was modified or parsed before computing the HMAC SHA256 signature. Ensure middleware reads raw binary streams and matches X-Signature-Sha256 headers."
+  },
+  {
+    "id": "Q41",
+    "question": "Why are inbound webhook payloads returning 400 Bad Request signature mismatch errors?",
+    "recommended documentation file": "third_party_webhook_integration.md",
+    "recommended answer": "Verify that your web framework reads the raw request payload prior to JSON parsing and check that shared secret keys match partner configuration settings."
+  },
+  {
+    "id": "Q42",
+    "question": "How do I debug cryptographic HMAC signature verification issues on incoming webhook endpoints?",
+    "recommended documentation file": "third_party_webhook_integration.md",
+    "recommended answer": "Check X-Signature-Sha256 header values against calculated digests, ensure raw body middleware is enabled, and confirm partner secret keys."
+  }
+]

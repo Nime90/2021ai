@@ -1,0 +1,7 @@
+*.env
+*.pkl
+*.ipynb
+*.bin
+*.venv313
+evaluation_results.json
+utils\__pycache__\*
