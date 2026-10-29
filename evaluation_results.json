@@ -1,0 +1,518 @@
+[
+    {
+        "id": "Q01",
+        "question": "Users are getting logged out unexpectedly and API calls return a 401 error. What should I check first?",
+        "expected_documentation": "auth_troubleshooting.md",
+        "retrieved_files": [
+            "auth_troubleshooting.md",
+            "auth_troubleshooting.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'auth_troubleshooting.md' in ['auth_troubleshooting.md', 'auth_troubleshooting.md']",
+        "gemini_answer": "It sounds like you're encountering an `AUTH_ERR_401_EXPIRED_TOKEN` issue, where users are logged out unexpectedly and API calls return a 401 Unauthorized status.\n\nHere's a step-by-step troubleshooting guide based on our internal documentation (`auth_troubleshooting.md`):\n\n1.  **Check client system clock synchronization:** Ensure the client system's clock is synchronized. An NTP drift greater than 5 minutes can invalidate tokens.\n2.  **Verify `REFRESH_TOKEN_ENABLED`:** Confirm that the `REFRESH_TOKEN_ENABLED` environment variable is set to `true` in the config service.\n3.  **Clear browser storage and re-authenticate:** Instruct users to clear their browser's local storage and session storage, then force a re-authentication flow against the Identity Provider (IdP).\n4.  **Inspect IdP logs (if issue persists):** If the problem continues, inspect the Keycloak or Okta logs for any indications of client secret expiration."
+    },
+    {
+        "id": "Q02",
+        "question": "How do I force sync user permissions via the CLI when they encounter a forbidden exception?",
+        "expected_documentation": "auth_troubleshooting.md",
+        "retrieved_files": [
+            "file_storage_upload_errors.md",
+            "billing_subscription_errors.md"
+        ],
+        "passed": false,
+        "notes": "Retrieval mismatch. Expected 'auth_troubleshooting.md', got ['file_storage_upload_errors.md', 'billing_subscription_errors.md']",
+        "gemini_answer": "It sounds like your users are encountering a `Forbidden` exception due to scope mismatches, and you need to force-sync their permissions.\n\nBased on the `auth_troubleshooting.md` documentation, here's the step-by-step resolution for `AUTH_ERR_403_SCOPE_MISMATCH`:\n\n1.  Navigate to the Admin Panel > User Management > Roles.\n2.  Confirm the user is mapped to the correct LDAP/Active Directory group.\n3.  Force-sync permissions using the CLI tool: `python manage.py sync_permissions --user=<email>`\n\n**Source:** `auth_troubleshooting.md`\n\nTo proceed with step 3, please provide the **email address** of the user experiencing the forbidden exception so we can execute the `sync_permissions` command."
+    },
+    {
+        "id": "Q03",
+        "question": "What happens if a user's NTP drift is greater than 5 minutes regarding their authentication tokens?",
+        "expected_documentation": "auth_troubleshooting.md",
+        "retrieved_files": [
+            "auth_troubleshooting.md",
+            "auth_troubleshooting.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'auth_troubleshooting.md' in ['auth_troubleshooting.md', 'auth_troubleshooting.md']",
+        "gemini_answer": "If a user's client system clock synchronization (NTP drift) is greater than 5 minutes, their authentication tokens will be invalidated, leading to issues like unexpected logouts or API calls returning a 401 Unauthorized status code.\n\nTo troubleshoot this issue, please follow these steps:\n\n1.  **Check Client System Clock Synchronization:** Ensure the client system's clock is synchronized correctly. An NTP drift greater than 5 minutes invalidates tokens.\n2.  **Verify Refresh Token Configuration:** Confirm that the `REFRESH_TOKEN_ENABLED` environment variable is set to `true` in the config service.\n3.  **Force Re-authentication:** Clear browser local storage/session storage and force a re-authentication flow against the Identity Provider (IdP).\n4.  **Inspect IdP Logs (if issue persists):** If the issue continues, inspect the Keycloak/Okta logs for any client secret expiration messages.\n\n**Source:** `auth_troubleshooting.md`"
+    },
+    {
+        "id": "Q04",
+        "question": "API requests are hanging for 30 seconds and failing with a gateway timeout. How do I inspect active DB connections?",
+        "expected_documentation": "database_performance.md",
+        "retrieved_files": [
+            "database_performance.md",
+            "database_performance.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'database_performance.md' in ['database_performance.md', 'database_performance.md']",
+        "gemini_answer": "Based on your description, \"API requests are hanging for 30 seconds and failing with a gateway timeout,\" this aligns with the `DB_ERR_504_CONNECTION_TIMEOUT` error.\n\nHere are the steps to troubleshoot and inspect active database connections:\n\n**Source:** `database_performance.md`\n\n1.  **Check current active database connections:**\n    Execute the following SQL query:\n    `SELECT count(*) FROM pg_stat_activity WHERE state = 'active';`\n\n2.  **If connections are maxed out, restart the connection pool proxy (PgBouncer):**\n    `sudo systemctl restart pgbouncer`\n\n3.  **Increase the pool size temporarily (if necessary) in `config/production.yaml`:**\n    ```yaml\n    database:\n      pool_size: 50\n      max_overflow: 10\n      timeout: 30\n    ```\n\nTo help me further, could you please provide the output of the `SELECT count(*) FROM pg_stat_activity WHERE state = 'active';` query?"
+    },
+    {
+        "id": "Q05",
+        "question": "What command can I use to restart the PgBouncer connection pool proxy when connections are maxed out?",
+        "expected_documentation": "database_performance.md",
+        "retrieved_files": [
+            "database_performance.md",
+            "database_performance.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'database_performance.md' in ['database_performance.md', 'database_performance.md']",
+        "gemini_answer": "When database connections are maxed out, you can restart the PgBouncer connection pool proxy.\n\nHere are the steps:\n\n1.  **Check current active database connections:**\n    `SELECT count(*) FROM pg_stat_activity WHERE state = 'active';`\n2.  **If connections are maxed out, restart the connection pool proxy (PgBouncer):**\n    `sudo systemctl restart pgbouncer`\n\n*Source: database_performance.md*"
+    },
+    {
+        "id": "Q06",
+        "question": "Where should I modify the pool size parameters temporarily when handling database connection timeouts?",
+        "expected_documentation": "database_performance.md",
+        "retrieved_files": [
+            "database_performance.md",
+            "database_performance.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'database_performance.md' in ['database_performance.md', 'database_performance.md']",
+        "gemini_answer": "To temporarily modify the pool size parameters when handling database connection timeouts, follow these steps:\n\n1.  **Locate the configuration file:** The pool size can be increased temporarily in `config/production.yaml`.\n2.  **Update the parameters:** Modify the `database` section as shown below:\n\n    ```yaml\n    database:\n      pool_size: 50\n      max_overflow: 10\n      timeout: 30\n    ```\n\nThis information is sourced from `database_performance.md`."
+    },
+    {
+        "id": "Q07",
+        "question": "A client application is receiving a 429 Too Many Requests response. How can I check their usage metrics in Redis?",
+        "expected_documentation": "api_rate_limiting.md",
+        "retrieved_files": [
+            "api_rate_limiting.md",
+            "api_rate_limiting.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'api_rate_limiting.md' in ['api_rate_limiting.md', 'api_rate_limiting.md']",
+        "gemini_answer": "It looks like your client application is encountering an `API_ERR_429_TOO_MANY_REQUESTS` error. To check their usage metrics in Redis, please follow these steps:\n\n1.  **Check the client's current usage metrics in the Redis cache tracker:**\n    Use the following command:\n    `redis-cli GET rate_limit:<client_api_key>`\n\n*(Source: api_rate_limiting.md)*\n\nTo proceed, please provide the `<client_api_key>` for the affected client. This will allow us to retrieve their specific usage metrics."
+    },
+    {
+        "id": "Q08",
+        "question": "Where do I update an enterprise partner's tier if they need a temporary rate limit exemption?",
+        "expected_documentation": "api_rate_limiting.md",
+        "retrieved_files": [
+            "api_rate_limiting.md",
+            "api_rate_limiting.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'api_rate_limiting.md' in ['api_rate_limiting.md', 'api_rate_limiting.md']",
+        "gemini_answer": "To update an enterprise partner's tier for a temporary rate limit exemption, follow these steps:\n\n1.  If the client is a trusted enterprise partner requiring a temporary exemption, update their tier in the **Kong API Gateway dashboard**.\n\n(Source: `api_rate_limiting.md`)"
+    },
+    {
+        "id": "Q09",
+        "question": "What programming pattern should customer support advise clients to implement to handle rate limiting gracefully?",
+        "expected_documentation": "api_rate_limiting.md",
+        "retrieved_files": [
+            "api_rate_limiting.md",
+            "api_rate_limiting.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'api_rate_limiting.md' in ['api_rate_limiting.md', 'api_rate_limiting.md']",
+        "gemini_answer": "To handle rate limiting gracefully, customer support should advise clients to implement the following:\n\n*   **Programming Pattern:** Implement **exponential backoff retry logic** in their integration scripts.\n\n**Source File:** `api_rate_limiting.md`"
+    },
+    {
+        "id": "Q10",
+        "question": "A customer upgraded their plan on the pricing page, but their account is still on the Free tier. Where should I check delivery logs?",
+        "expected_documentation": "billing_subscription_errors.md",
+        "retrieved_files": [
+            "billing_subscription_errors.md",
+            "billing_subscription_errors.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'billing_subscription_errors.md' in ['billing_subscription_errors.md', 'billing_subscription_errors.md']",
+        "gemini_answer": "It sounds like your customer is experiencing an issue where their plan upgrade isn't reflecting on their account, which remains on the \"Free\" tier. This is a common symptom of a Stripe webhook failure.\n\nHere's a step-by-step guide to troubleshoot this issue:\n\n1.  **Check Stripe Webhook Delivery Logs:**\n    *   Go to Stripe Dashboard > Developers > Webhooks.\n    *   Check the recent delivery logs specifically for the `checkout.session.completed` event.\n    *   (Source: `billing_subscription_errors.md`)\n\n2.  **Verify Stripe Webhook Secret:**\n    *   Ensure that the `STRIPE_WEBHOOK_SECRET` environment variable on your server matches the active signing secret configured in Stripe.\n    *   (Source: `billing_subscription_errors.md`)\n\n3.  **Manually Trigger License Sync:**\n    *   If the above steps don't resolve the issue, you can manually trigger a license synchronization.\n    *   Run the backend admin command: `python manage.py resync_license --customer-email=<email>`\n    *   (Source: `billing_subscription_errors.md`)\n\nTo proceed with step 3, please provide the **customer's email address**."
+    },
+    {
+        "id": "Q11",
+        "question": "How do I manually trigger a customer license sync using the backend admin command?",
+        "expected_documentation": "billing_subscription_errors.md",
+        "retrieved_files": [
+            "billing_subscription_errors.md",
+            "billing_subscription_errors.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'billing_subscription_errors.md' in ['billing_subscription_errors.md', 'billing_subscription_errors.md']",
+        "gemini_answer": "To manually trigger a customer license sync using the backend admin command, follow these steps:\n\n1.  Run the backend admin command:\n    `python manage.py resync_license --customer-email=<email>`\n\n*(Source: billing_subscription_errors.md)*\n\n**Proactive Question:** To ensure we can execute this command correctly, please provide the customer's email address."
+    },
+    {
+        "id": "Q12",
+        "question": "Which environment variable needs to match the active signing secret on the server when Stripe webhooks fail?",
+        "expected_documentation": "billing_subscription_errors.md",
+        "retrieved_files": [
+            "billing_subscription_errors.md",
+            "third_party_webhook_integration.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'billing_subscription_errors.md' in ['billing_subscription_errors.md', 'third_party_webhook_integration.md']",
+        "gemini_answer": "When Stripe webhooks fail, the `STRIPE_WEBHOOK_SECRET` environment variable needs to match the active signing secret on the server.\n\nHere's a step-by-step troubleshooting guide for `BILLING_ERR_902_STRIPE_WEBHOOK_FAILED`:\n\n1.  **Check Stripe Webhook Delivery Logs:** Go to the Stripe Dashboard > Developers > Webhooks and check the recent delivery logs for the `checkout.session.completed` event.\n2.  **Verify Environment Variable:** Verify that the `STRIPE_WEBHOOK_SECRET` environment variable matches the active signing secret on the server.\n3.  **Manually Trigger License Sync:** Manually trigger a license sync by running the backend admin command:\n    `python manage.py resync_license --customer-email=<email>`\n\n*(Source: billing_subscription_errors.md)*\n\nTo help further, could you please provide:\n*   The specific customer email experiencing this issue?\n*   Any error messages or codes from the Stripe webhook delivery logs?"
+    },
+    {
+        "id": "Q13",
+        "question": "Users are reporting a blank white screen with a Loading chunk failed error after a deployment. What instructions should I give them?",
+        "expected_documentation": "frontend_ui_caching.md",
+        "retrieved_files": [
+            "frontend_ui_caching.md",
+            "frontend_ui_caching.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'frontend_ui_caching.md' in ['frontend_ui_caching.md', 'frontend_ui_caching.md']",
+        "gemini_answer": "It sounds like your users are encountering a `UI_ERR_CHUNK_LOAD_FAILED` error, which typically manifests as a blank white screen after a deployment. This happens when the browser tries to load old cached JavaScript bundles that are no longer available on the CDN.\n\nHere are the step-by-step instructions to resolve this issue:\n\n1.  **Instruct the user to perform a hard refresh:**\n    *   On Windows: `Ctrl + Shift + R`\n    *   On Mac: `Cmd + Shift + R`\n    *   This will bypass service worker caches.\n2.  **Verify Cloudflare/CDN cache purge status:**\n    *   Check that the cache for `/static/js/*.js` assets has been purged.\n3.  **Ensure cache-control headers are set correctly:**\n    *   Confirm that `cache-control` headers on `index.html` are explicitly set to `no-cache, no-store, must-revalidate`.\n\n*Source: frontend_ui_caching.md*"
+    },
+    {
+        "id": "Q14",
+        "question": "How do we fix stale frontend JavaScript assets caused by CDN caching?",
+        "expected_documentation": "frontend_ui_caching.md",
+        "retrieved_files": [
+            "frontend_ui_caching.md",
+            "frontend_ui_caching.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'frontend_ui_caching.md' in ['frontend_ui_caching.md', 'frontend_ui_caching.md']",
+        "gemini_answer": "To address stale frontend JavaScript assets caused by CDN caching, please follow these steps:\n\n**Issue:** Stale frontend JavaScript assets caused by CDN caching.\n**Relevant Error Code:** `UI_ERR_CHUNK_LOAD_FAILED`\n**Source:** `frontend_ui_caching.md`\n\n**Step-by-Step Resolution:**\n\n1.  Instruct the user to perform a hard refresh (`Ctrl + Shift + R` on Windows, `Cmd + Shift + R` on Mac) to bypass service worker caches.\n2.  Verify Cloudflare/CDN cache purge status for `/static/js/*.js` assets.\n3.  Ensure cache-control headers on `index.html` are explicitly set to `no-cache, no-store, must-revalidate`."
+    },
+    {
+        "id": "Q15",
+        "question": "What cache-control header settings should be explicitly configured on index.html?",
+        "expected_documentation": "frontend_ui_caching.md",
+        "retrieved_files": [
+            "frontend_ui_caching.md",
+            "frontend_ui_caching.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'frontend_ui_caching.md' in ['frontend_ui_caching.md', 'frontend_ui_caching.md']",
+        "gemini_answer": "To ensure proper caching behavior for `index.html`, the `cache-control` headers should be explicitly configured as follows:\n\n*   **Header Setting:** `no-cache, no-store, must-revalidate`\n\nThis setting is crucial for preventing stale frontend states and is part of the resolution for `UI_ERR_CHUNK_LOAD_FAILED`.\n\n**Source:** `frontend_ui_caching.md`"
+    },
+    {
+        "id": "Q16",
+        "question": "A support container exited unexpectedly with exit code 137. How do I inspect its exit history in Docker?",
+        "expected_documentation": "container_deployment.md",
+        "retrieved_files": [
+            "container_deployment.md",
+            "container_deployment.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'container_deployment.md' in ['container_deployment.md', 'container_deployment.md']",
+        "gemini_answer": "It looks like your support container exited unexpectedly with exit code `137`. This typically indicates an Out-Of-Memory (OOM) kill.\n\nTo inspect its exit history in Docker, please follow this step:\n\n1.  **Check container exit history via Docker:**\n    ```bash\n    docker inspect <container_name> --format='{{.State.ExitCode}}'\n    ```\n    *Replace `<container_name>` with the actual name of your container.*\n\n(Source: `container_deployment.md`)\n\nTo help me further diagnose and resolve this, could you please provide:\n1.  The exact name of the container that exited?\n2.  Any recent kernel logs (e.g., from `dmesg -T | grep -i oom`) if you have access to the host machine?"
+    },
+    {
+        "id": "Q17",
+        "question": "How do I check Linux kernel logs for Out-Of-Memory events?",
+        "expected_documentation": "container_deployment.md",
+        "retrieved_files": [
+            "audit_log_export_failure.md",
+            "container_deployment.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'container_deployment.md' in ['audit_log_export_failure.md', 'container_deployment.md']",
+        "gemini_answer": "To check Linux kernel logs for Out-Of-Memory events, please follow this step:\n\n1.  Inspect system kernel logs for OOM events using the command:\n    `dmesg -T | grep -i oom`\n\n*Source: container_deployment.md*"
+    },
+    {
+        "id": "Q18",
+        "question": "Where can I increase the memory limit for containers that crash due to OOM errors?",
+        "expected_documentation": "container_deployment.md",
+        "retrieved_files": [
+            "container_deployment.md",
+            "container_deployment.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'container_deployment.md' in ['container_deployment.md', 'container_deployment.md']",
+        "gemini_answer": "To increase the memory limit for containers that crash due to Out-Of-Memory (OOM) errors, follow these steps:\n\n**Error: `DEVOPS_ERR_137_OOM_KILLED`**\n*   **Symptom:** Support containers or worker nodes exit unexpectedly with exit code `137`.\n*   **Root Cause:** The container exceeded its assigned RAM limit in Docker/Kubernetes, triggering the Linux kernel's Out-Of-Memory killer.\n*   **Step-by-Step Resolution:**\n    1.  Check container exit history via Docker: `docker inspect <container_name> --format='{{.State.ExitCode}}'`\n    2.  Inspect system kernel logs for OOM events: `dmesg -T | grep -i oom`\n    3.  Increase the memory limit in `docker-compose.yml` by adding or modifying the `memory` limit under `deploy.resources.limits`:\n        ```yaml\n        deploy:\n          resources:\n            limits:\n              memory: 4G\n        ```\n\n*(Source: container_deployment.md)*"
+    },
+    {
+        "id": "Q19",
+        "question": "What is the current stock price of Apple?",
+        "expected_documentation": "none",
+        "retrieved_files": [
+            "api_rate_limiting.md",
+            "ssl_certificate_expiry.md"
+        ],
+        "passed": true,
+        "notes": "Guardrail successfully triggered refusal.",
+        "gemini_answer": "I do not have information about the current stock price of Apple in my current internal knowledge base. My knowledge base focuses on technical operations issues such as API rate limiting, SSL certificate expiry, frontend UI caching, audit log export failures, and billing subscription errors."
+    },
+    {
+        "id": "Q20",
+        "question": "How do I configure SSL certificates for an Nginx reverse proxy?",
+        "expected_documentation": "none",
+        "retrieved_files": [
+            "ssl_certificate_expiry.md",
+            "ssl_certificate_expiry.md"
+        ],
+        "passed": true,
+        "notes": "Guardrail successfully triggered refusal.",
+        "gemini_answer": "I do not have information in my current internal knowledge base on how to initially configure SSL certificates for an Nginx reverse proxy. The available documentation focuses on troubleshooting and renewing expired certificates."
+    },
+    {
+        "id": "Q21",
+        "question": "What is the company's policy on remote work and holiday allowances?",
+        "expected_documentation": "none",
+        "retrieved_files": [
+            "billing_subscription_errors.md",
+            "auth_troubleshooting.md"
+        ],
+        "passed": true,
+        "notes": "Guardrail successfully triggered refusal.",
+        "gemini_answer": "I apologize, but I do not have information regarding the company's policy on remote work or holiday allowances in my current internal knowledge base. My knowledge base is focused on technical support topics such as billing errors, authentication issues, API rate limiting, webhook integrations, and file storage errors."
+    },
+    {
+        "id": "Q22",
+        "question": "A client is experiencing gateway timeouts (HTTP 504) and receiving 429 rate limit errors simultaneously during a heavy batch sync. Which two areas should I check?",
+        "expected_documentation": [
+            "database_performance.md",
+            "api_rate_limiting.md"
+        ],
+        "retrieved_files": [
+            "database_performance.md",
+            "api_rate_limiting.md",
+            "database_performance.md"
+        ],
+        "passed": true,
+        "notes": "Multi-source match successful. Retrieved: ['database_performance.md', 'api_rate_limiting.md', 'database_performance.md']",
+        "gemini_answer": "It sounds like your client is encountering two distinct issues during their heavy batch sync. Let's address each one based on our internal documentation.\n\n---\n\n### Issue 1: Gateway Timeouts (HTTP 504)\n\n**Source:** `database_performance.md`\n\n**Symptom:** API requests hang for 30 seconds and then fail with a Gateway Timeout. This is often due to database connection bottlenecks.\n\n**Step-by-Step Resolution:**\n\n1.  **Check current active database connections:**\n    Execute the following SQL query to see if connections are maxed out:\n    `SELECT count(*) FROM pg_stat_activity WHERE state = 'active';`\n\n2.  **Restart the connection pool proxy (if connections are maxed out):**\n    If connections are at their limit, restart PgBouncer:\n    `sudo systemctl restart pgbouncer`\n\n3.  **Increase the pool size temporarily (if issues persist):**\n    Modify the `config/production.yaml` file:\n    ```yaml\n    database:\n      pool_size: 50\n      max_overflow: 10\n      timeout: 30\n    ```\n\n---\n\n### Issue 2: 429 Rate Limit Errors\n\n**Source:** `api_rate_limiting.md`\n\n**Symptom:** Client applications receive a `429 Too Many Requests` header response, halting automated syncs. This indicates the client exceeded the default threshold of 1,000 requests per minute per API key.\n\n**Step-by-Step Resolution:**\n\n1.  **Check the client's current usage metrics:**\n    You'll need the client's API key for this step:\n    `redis-cli GET rate_limit:<client_api_key>`\n\n2.  **Update their tier in Kong API Gateway (if applicable):**\n    If the client is a trusted enterprise partner requiring a temporary exemption, update their tier in the Kong API Gateway dashboard.\n\n3.  **Advise the customer support team:**\n    Instruct the client to implement **exponential backoff retry logic** in their integration scripts.\n\n---\n\n**To help me provide more targeted assistance, please provide the following crucial detail:**\n\n*   **What is the client's API key?** (This is essential for troubleshooting the 429 rate limit error.)"
+    },
+    {
+        "id": "Q23",
+        "question": "After a new release, users complain of blank white screens (UI chunk load failures) and simultaneously our container crashed with exit code 137. What troubleshooting steps should I follow for both?",
+        "expected_documentation": [
+            "frontend_ui_caching.md",
+            "container_deployment.md"
+        ],
+        "retrieved_files": [
+            "frontend_ui_caching.md",
+            "container_deployment.md",
+            "frontend_ui_caching.md"
+        ],
+        "passed": true,
+        "notes": "Multi-source match successful. Retrieved: ['frontend_ui_caching.md', 'container_deployment.md', 'frontend_ui_caching.md']",
+        "gemini_answer": "Here are the troubleshooting steps for the issues you've described:\n\n### 1. Resolving Blank White Screens (UI Chunk Load Failures)\n\n**Error:** `UI_ERR_CHUNK_LOAD_FAILED`\n*   **Symptom:** Users report a blank white screen or a JavaScript toast saying `Loading chunk X failed` after a new version is pushed.\n*   **Root Cause:** The browser is trying to load old hashed JavaScript bundles from cache that no longer exist on the CDN server.\n*   **Step-by-Step Resolution:**\n    1.  Instruct the user to perform a hard refresh (`Ctrl + Shift + R` on Windows, `Cmd + Shift + R` on Mac) to bypass service worker caches.\n    2.  Verify Cloudflare/CDN cache purge status for `/static/js/*.js` assets.\n    3.  Ensure cache-control headers on index.html are explicitly set to `no-cache, no-store, must-revalidate`.\n\n*(Source: frontend_ui_caching.md)*\n\n### 2. Resolving Container Crashes with Exit Code 137\n\n**Error:** `DEVOPS_ERR_137_OOM_KILLED`\n*   **Symptom:** Support containers or worker nodes exit unexpectedly with exit code `137`.\n*   **Root Cause:** The container exceeded its assigned RAM limit in Docker/Kubernetes, triggering the Linux kernel's Out-Of-Memory killer.\n*   **Step-by-Step Resolution:**\n    1.  Check container exit history via Docker: `docker inspect <container_name> --format='{{.State.ExitCode}}'`\n    2.  Inspect system kernel logs for OOM events: `dmesg -T | grep -i oom`\n    3.  Increase the memory limit in `docker-compose.yml`:\n        ```yaml\n        deploy:\n          resources:\n            limits:\n              memory: 4G\n        ```\n\n*(Source: container_deployment.md)*\n\n---\n\nTo assist further with the container issue, please provide the exact `<container_name>` you are investigating."
+    },
+    {
+        "id": "Q24",
+        "question": "A customer cannot log in due to a 401 token expiration error, and their subscription webhook also failed to sync. How do I resolve both issues?",
+        "expected_documentation": [
+            "auth_troubleshooting.md",
+            "billing_subscription_errors.md"
+        ],
+        "retrieved_files": [
+            "billing_subscription_errors.md",
+            "auth_troubleshooting.md",
+            "third_party_webhook_integration.md"
+        ],
+        "passed": true,
+        "notes": "Multi-source match successful. Retrieved: ['billing_subscription_errors.md', 'auth_troubleshooting.md', 'third_party_webhook_integration.md']",
+        "gemini_answer": "Here's a step-by-step guide to address both issues based on your internal knowledge base:\n\n### 1. Resolving the 401 Token Expiration Error\n\nThe symptom \"customer cannot log in due to a 401 token expiration error\" directly corresponds to `AUTH_ERR_401_EXPIRED_TOKEN`.\n\n**Source:** `auth_troubleshooting.md`\n\n**Step-by-Step Resolution:**\n1.  **Check Client System Clock:** Verify that the client system clock synchronization (NTP drift) is not greater than 5 minutes, as this can invalidate tokens.\n2.  **Verify Refresh Token Enabled:** Ensure that the `REFRESH_TOKEN_ENABLED` environment variable is set to `true` in the config service.\n3.  **Clear Browser Data:** Instruct the customer to clear their browser's local storage/session storage and force a re-authentication flow against the Identity Provider (IdP).\n4.  **Inspect IdP Logs (if issue persists):** If the issue continues, inspect the Keycloak/Okta logs for client secret expiration.\n\n### 2. Troubleshooting Subscription Webhook Sync Failure\n\nYour internal knowledge base mentions \"Handling Subscription Failures and Webhook Sync Errors\" but does not provide specific troubleshooting steps or error codes for a generic \"subscription webhook failed to sync\" scenario. The `WEBHOOK_ERR_INVALID_SIGNATURE` error is a specific type of webhook failure, but your query does not specify this error.\n\n**Source:** `billing_subscription_errors.md` (for the topic mention)\n\nTo provide further assistance, please clarify the following:\n*   **Is there an error code or specific error message associated with the webhook sync failure?** (e.g., `WEBHOOK_ERR_INVALID_SIGNATURE`, a 5xx server error, or a specific message from the webhook provider).\n*   **What are the symptoms of the webhook failure?** (e.g., data not updating, specific logs showing a timeout, or a \"Bad Request\" response)."
+    },
+    {
+        "id": "Q25",
+        "question": "Our email notifications are failing and logs show an EMAIL_ERR_535_SMTP_AUTHENTICATION error. How do we fix this?",
+        "expected_documentation": "email_notification_delivery.md",
+        "retrieved_files": [
+            "email_notification_delivery.md",
+            "email_notification_delivery.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'email_notification_delivery.md' in ['email_notification_delivery.md', 'email_notification_delivery.md']",
+        "gemini_answer": "It looks like you're encountering an `EMAIL_ERR_535_SMTP_AUTHENTICATION` error with your email notifications. This typically indicates an issue with the SMTP authentication credentials.\n\nHere's a step-by-step guide to troubleshoot and resolve this issue:\n\n**Error: `EMAIL_ERR_535_SMTP_AUTHENTICATION`**\n*   **Symptom:** System fails to send notification emails, logging an authentication credentials error.\n*   **Root Cause:** The SMTP password or API user key has been rotated or expired in the mail relay service.\n\n**Step-by-Step Resolution:**\n\n1.  **Verify Environment Variables:** Check the `SMTP_USER` and `SMTP_PASSWORD` environment variables in the notification service configuration. Ensure they are current and correct.\n2.  **Check Mail Relay Dashboard:** Access the SendGrid or AWS SES dashboard logs to look for any account suspension or IP block flags that might be preventing email delivery.\n3.  **Test Connectivity:** From the server CLI, test direct connectivity to the SMTP server using the following command:\n    `telnet smtp.sendgrid.net 587`\n\n*(Source: email_notification_delivery.md)*"
+    },
+    {
+        "id": "Q26",
+        "question": "Password reset emails are not going through because the mail relay is throwing authentication credentials errors. What should I check?",
+        "expected_documentation": "email_notification_delivery.md",
+        "retrieved_files": [
+            "email_notification_delivery.md",
+            "email_notification_delivery.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'email_notification_delivery.md' in ['email_notification_delivery.md', 'email_notification_delivery.md']",
+        "gemini_answer": "It sounds like you're encountering an `EMAIL_ERR_535_SMTP_AUTHENTICATION` issue, where the mail relay is rejecting emails due to authentication problems.\n\nHere are the steps to troubleshoot this:\n\n**Error: `EMAIL_ERR_535_SMTP_AUTHENTICATION`**\n*   **Symptom:** System fails to send notification emails, logging an authentication credentials error.\n*   **Root Cause:** The SMTP password or API user key has been rotated or expired in the mail relay service.\n\n**Step-by-Step Resolution:**\n1.  Verify the `SMTP_USER` and `SMTP_PASSWORD` environment variables in the notification service config.\n2.  Check SendGrid or AWS SES dashboard logs for account suspension or IP block flags.\n3.  Test connectivity directly from the server CLI: `telnet smtp.sendgrid.net 587`\n\n*(Source: email_notification_delivery.md)*"
+    },
+    {
+        "id": "Q27",
+        "question": "How do I diagnose SendGrid relay rejections or SMTP authentication drops on our server?",
+        "expected_documentation": "email_notification_delivery.md",
+        "retrieved_files": [
+            "email_notification_delivery.md",
+            "email_notification_delivery.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'email_notification_delivery.md' in ['email_notification_delivery.md', 'email_notification_delivery.md']",
+        "gemini_answer": "To diagnose SendGrid relay rejections or SMTP authentication drops, please follow these steps:\n\n**Troubleshooting SMTP and Notification Delivery Failures** (Source: `email_notification_delivery.md`)\n\n1.  **Verify SMTP Credentials:**\n    *   Check the `SMTP_USER` and `SMTP_PASSWORD` environment variables in the notification service configuration.\n2.  **Check Mail Relay Service Logs:**\n    *   Review the SendGrid (or AWS SES) dashboard logs for any account suspension or IP block flags.\n3.  **Test Connectivity:**\n    *   From the server CLI, test connectivity directly to the SMTP server using:\n        `telnet smtp.sendgrid.net 587`\n\nThis process addresses the common error `EMAIL_ERR_535_SMTP_AUTHENTICATION`, which indicates issues with SMTP authentication credentials or relay service problems."
+    },
+    {
+        "id": "Q28",
+        "question": "Users uploading large profile avatars get instant STORAGE_ERR_403_S3_ACCESS_DENIED errors. What is causing this?",
+        "expected_documentation": "file_storage_upload_errors.md",
+        "retrieved_files": [
+            "file_storage_upload_errors.md",
+            "file_storage_upload_errors.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'file_storage_upload_errors.md' in ['file_storage_upload_errors.md', 'file_storage_upload_errors.md']",
+        "gemini_answer": "Here's a step-by-step troubleshooting guide for the `STORAGE_ERR_403_S3_ACCESS_DENIED` error:\n\n**Symptom:** File uploads fail instantly with an S3 Forbidden exception.\n**Root Cause:** The IAM role assigned to the backend service lacks `s3:PutObject` and `s3:PutObjectAcl` permissions on the target bucket.\n\n**Step-by-Step Resolution:**\n1.  Inspect the AWS IAM policy attached to the running instance profile or ECS task role.\n2.  Verify that the bucket name in `STORAGE_BUCKET_NAME` matches the environment variable exactly.\n3.  Ensure the bucket CORS configuration allows PUT requests from the application domain.\n\n*(Source: file_storage_upload_errors.md)*"
+    },
+    {
+        "id": "Q29",
+        "question": "Why are cloud storage file uploads failing with S3 Forbidden exceptions?",
+        "expected_documentation": "file_storage_upload_errors.md",
+        "retrieved_files": [
+            "file_storage_upload_errors.md",
+            "file_storage_upload_errors.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'file_storage_upload_errors.md' in ['file_storage_upload_errors.md', 'file_storage_upload_errors.md']",
+        "gemini_answer": "Here's a step-by-step troubleshooting guide for cloud storage file uploads failing with S3 Forbidden exceptions:\n\n**Error: `STORAGE_ERR_403_S3_ACCESS_DENIED`**\n*   **Symptom:** File uploads fail instantly with an S3 Forbidden exception.\n*   **Root Cause:** The IAM role assigned to the backend service lacks `s3:PutObject` and `s3:PutObjectAcl` permissions on the target bucket.\n\n**Step-by-Step Resolution:**\n1.  Inspect the AWS IAM policy attached to the running instance profile or ECS task role.\n2.  Verify that the bucket name in `STORAGE_BUCKET_NAME` matches the environment variable exactly.\n3.  Ensure the bucket CORS configuration allows PUT requests from the application domain.\n\n*(Source: file_storage_upload_errors.md)*"
+    },
+    {
+        "id": "Q30",
+        "question": "We are facing S3 access denied issues when users try to export and upload attachments. How can we resolve it?",
+        "expected_documentation": "file_storage_upload_errors.md",
+        "retrieved_files": [
+            "file_storage_upload_errors.md",
+            "file_storage_upload_errors.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'file_storage_upload_errors.md' in ['file_storage_upload_errors.md', 'file_storage_upload_errors.md']",
+        "gemini_answer": "It sounds like you're encountering `STORAGE_ERR_403_S3_ACCESS_DENIED` issues when users attempt to upload attachments and export reports. This error typically indicates a problem with S3 permissions.\n\nHere's a step-by-step guide to resolve this issue, based on our internal documentation:\n\n**Error: `STORAGE_ERR_403_S3_ACCESS_DENIED`**\n*   **Symptom:** File uploads fail instantly with an S3 Forbidden exception.\n*   **Root Cause:** The IAM role assigned to the backend service lacks `s3:PutObject` and `s3:PutObjectAcl` permissions on the target bucket.\n\n**Step-by-Step Resolution:**\n1.  Inspect the AWS IAM policy attached to the running instance profile or ECS task role.\n2.  Verify that the bucket name in `STORAGE_BUCKET_NAME` matches the environment variable exactly.\n3.  Ensure the bucket CORS configuration allows PUT requests from the application domain.\n\n**Source File:** `file_storage_upload_errors.md`\n\nTo help us further diagnose and ensure we're addressing the exact problem, could you please provide:\n1.  The **exact error code** or message observed in the logs (if it's not `STORAGE_ERR_403_S3_ACCESS_DENIED`)?\n2.  The **environment** (e.g., `production`, `staging`, `development`) where this issue is occurring?"
+    },
+    {
+        "id": "Q31",
+        "question": "Async background jobs and report sync tasks are getting stuck, throwing WORKER_ERR_TASK_TIMEOUT errors. How do we fix this?",
+        "expected_documentation": "background_worker_queue.md",
+        "retrieved_files": [
+            "background_worker_queue.md",
+            "background_worker_queue.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'background_worker_queue.md' in ['background_worker_queue.md', 'background_worker_queue.md']",
+        "gemini_answer": "It looks like you're encountering `WORKER_ERR_TASK_TIMEOUT` errors with your async background jobs and report sync tasks. This typically happens when a heavy SQL query or external API call within a Celery task exceeds the default execution time limit.\n\nHere's the step-by-step resolution:\n\n**Source:** `background_worker_queue.md`\n\n1.  **Check active worker status and queue length:**\n    *   Use Flower or the CLI to inspect active workers:\n        `celery -A core inspect active`\n2.  **Restart hanging workers safely:**\n    *   Execute the following command:\n        `celery -A core worker --purge`\n3.  **Increase the soft time limit configuration:**\n    *   Modify `celery.py` to increase the `task_soft_time_limit`. For example:\n        `task_soft_time_limit = 600`"
+    },
+    {
+        "id": "Q32",
+        "question": "Celery background worker tasks are freezing and hitting SoftTimeLimitExceeded. What steps should I take?",
+        "expected_documentation": "background_worker_queue.md",
+        "retrieved_files": [
+            "background_worker_queue.md",
+            "background_worker_queue.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'background_worker_queue.md' in ['background_worker_queue.md', 'background_worker_queue.md']",
+        "gemini_answer": "Based on the internal documentation, here are the steps to address Celery background worker tasks freezing and hitting `SoftTimeLimitExceeded`:\n\n**Source:** `background_worker_queue.md`\n\n**Error:** `WORKER_ERR_TASK_TIMEOUT` (Symptom: Background jobs freeze and eventually throw a `SoftTimeLimitExceeded` exception)\n\n**Step-by-Step Resolution:**\n\n1.  Check active worker status and queue length via Flower or CLI:\n    `celery -A core inspect active`\n2.  Restart hanging workers safely:\n    `celery -A core worker --purge`\n3.  Increase the soft time limit configuration in `celery.py`:\n    `task_soft_time_limit = 600`"
+    },
+    {
+        "id": "Q33",
+        "question": "How do I inspect and clear stalled background worker queues when bulk data sync tasks stall?",
+        "expected_documentation": "background_worker_queue.md",
+        "retrieved_files": [
+            "background_worker_queue.md",
+            "background_worker_queue.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'background_worker_queue.md' in ['background_worker_queue.md', 'background_worker_queue.md']",
+        "gemini_answer": "To inspect and clear stalled background worker queues when bulk data sync tasks stall, please follow these steps:\n\n**Source:** `background_worker_queue.md`\n\n1.  **Check active worker status and queue length:**\n    *   Use the following command via Flower or CLI:\n        `celery -A core inspect active`\n\n2.  **Restart hanging workers safely:**\n    *   Execute the following command:\n        `celery -A core worker --purge`\n\n3.  **Consider increasing the soft time limit (if tasks are timing out):**\n    *   If the root cause is tasks exceeding the default execution time limit, increase the `task_soft_time_limit` configuration in `celery.py` (e.g., to 600 seconds):\n        `task_soft_time_limit = 600`"
+    },
+    {
+        "id": "Q34",
+        "question": "API clients are reporting SSL_ERR_CERT_DATE_INVALID security warnings. How do we renew the certificate?",
+        "expected_documentation": "ssl_certificate_expiry.md",
+        "retrieved_files": [
+            "ssl_certificate_expiry.md",
+            "ssl_certificate_expiry.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'ssl_certificate_expiry.md' in ['ssl_certificate_expiry.md', 'ssl_certificate_expiry.md']",
+        "gemini_answer": "It looks like your API clients are encountering `SSL_ERR_CERT_DATE_INVALID` security warnings. This typically indicates an expired SSL certificate.\n\nHere's the step-by-step resolution to renew the certificate:\n\n**Error: `SSL_ERR_CERT_DATE_INVALID`**\n*   **Symptom:** API clients throw SSL verification errors and load balancers drop secure connections.\n*   **Root Cause:** The Let's Encrypt automated TLS renewal cron job failed, causing the domain certificate to expire.\n\n**Step-by-Step Resolution:**\n1.  **Check certificate expiration date via OpenSSL:**\n    `echo | openssl s_client -connect api.yourdomain.com:443 2>/dev/null | openssl x509 -noout -dates`\n2.  **Force manual certificate renewal on the Nginx/Certbot proxy:**\n    `sudo certbot renew --force-renewal`\n3.  **Reload Nginx configuration:**\n    `sudo systemctl reload nginx`\n\n*(Source: ssl_certificate_expiry.md)*"
+    },
+    {
+        "id": "Q35",
+        "question": "Load balancers are dropping secure connections because the domain TLS certificate has expired. What is the fix?",
+        "expected_documentation": "ssl_certificate_expiry.md",
+        "retrieved_files": [
+            "ssl_certificate_expiry.md",
+            "ssl_certificate_expiry.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'ssl_certificate_expiry.md' in ['ssl_certificate_expiry.md', 'ssl_certificate_expiry.md']",
+        "gemini_answer": "It appears you are encountering an issue where load balancers are dropping secure connections due to an expired domain TLS certificate. This is a common symptom of the `SSL_ERR_CERT_DATE_INVALID` error, typically caused by a failed Let's Encrypt automated TLS renewal cron job.\n\nHere's the step-by-step resolution:\n\n1.  **Check certificate expiration date:**\n    *   Run the following command to verify the certificate expiration date:\n        `echo | openssl s_client -connect api.yourdomain.com:443 2>/dev/null | openssl x509 -noout -dates`\n2.  **Force manual certificate renewal:**\n    *   On the Nginx/Certbot proxy, execute this command to force a renewal:\n        `sudo certbot renew --force-renewal`\n3.  **Reload Nginx configuration:**\n    *   Apply the new certificate by reloading Nginx:\n        `sudo systemctl reload nginx`\n\n*(Source: ssl_certificate_expiry.md)*\n\nTo help me ensure this is fully resolved, could you please confirm the domain (`api.yourdomain.com` in the example) you are troubleshooting?"
+    },
+    {
+        "id": "Q36",
+        "question": "How do I troubleshoot Nginx SSL handshake errors and expired Let's Encrypt certificates?",
+        "expected_documentation": "ssl_certificate_expiry.md",
+        "retrieved_files": [
+            "ssl_certificate_expiry.md",
+            "ssl_certificate_expiry.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'ssl_certificate_expiry.md' in ['ssl_certificate_expiry.md', 'ssl_certificate_expiry.md']",
+        "gemini_answer": "Based on your query regarding Nginx SSL handshake errors and expired Let's Encrypt certificates, here's the troubleshooting guide:\n\n**Error: `SSL_ERR_CERT_DATE_INVALID`**\n*   **Symptom:** API clients throw SSL verification errors and load balancers drop secure connections.\n*   **Root Cause:** The Let's Encrypt automated TLS renewal cron job failed, causing the domain certificate to expire.\n*   **Step-by-Step Resolution:**\n    1.  Check certificate expiration date via OpenSSL:\n        `echo | openssl s_client -connect api.yourdomain.com:443 2>/dev/null | openssl x509 -noout -dates`\n    2.  Force manual certificate renewal on the Nginx/Certbot proxy:\n        `sudo certbot renew --force-renewal`\n    3.  Reload Nginx configuration: `sudo systemctl reload nginx`\n\n(Source: `ssl_certificate_expiry.md`)\n\nTo help me further, could you please provide the exact error message or code you are seeing, and the domain name experiencing the issue?"
+    },
+    {
+        "id": "Q37",
+        "question": "Downloading multi-year audit logs causes server memory to spike and throws EXPORT_ERR_MEMORY_OVERFLOW. How do we fix it?",
+        "expected_documentation": "audit_log_export_failure.md",
+        "retrieved_files": [
+            "audit_log_export_failure.md",
+            "audit_log_export_failure.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'audit_log_export_failure.md' in ['audit_log_export_failure.md', 'audit_log_export_failure.md']",
+        "gemini_answer": "Here's how to resolve the `EXPORT_ERR_MEMORY_OVERFLOW` issue when downloading multi-year audit logs:\n\n**Source:** `audit_log_export_failure.md`\n\n**Error:** `EXPORT_ERR_MEMORY_OVERFLOW`\n**Symptom:** Exporting CSV or PDF audit logs causes the worker node to consume 100% RAM and crash.\n\n**Step-by-Step Resolution:**\n\n1.  Check system RAM usage during exports using `htop`.\n2.  Instruct users to narrow down the date range filter to chunks of 30 days or less.\n3.  Ensure pagination chunk size is set to 5,000 records in `exports/tasks.py`."
+    },
+    {
+        "id": "Q38",
+        "question": "Why are compliance report exports crashing backend nodes with 100% RAM usage?",
+        "expected_documentation": "audit_log_export_failure.md",
+        "retrieved_files": [
+            "audit_log_export_failure.md",
+            "audit_log_export_failure.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'audit_log_export_failure.md' in ['audit_log_export_failure.md', 'audit_log_export_failure.md']",
+        "gemini_answer": "It appears you are encountering an `EXPORT_ERR_MEMORY_OVERFLOW` issue where compliance report exports are causing backend nodes to consume 100% RAM and crash. This is typically due to the system attempting to load too many audit rows into memory at once.\n\nHere is a step-by-step resolution guide:\n\n**Source:** `audit_log_export_failure.md`\n\n**Step-by-Step Resolution:**\n\n1.  **Check System RAM Usage:** During an export attempt, monitor the system's RAM usage using `htop` to confirm the memory spike.\n2.  **Narrow Date Range:** Instruct the users attempting the export to narrow down the date range filter for their reports to chunks of 30 days or less.\n3.  **Verify Pagination Chunk Size:** Ensure that the pagination chunk size is configured to 5,000 records in the `exports/tasks.py` file.\n\nTo help us further diagnose and confirm the issue, could you please provide:\n*   The exact date range the user was attempting to export?\n*   Any specific error messages or logs observed on the backend node during the crash, if available?"
+    },
+    {
+        "id": "Q39",
+        "question": "How do we prevent gateway timeouts and memory exhaustion when generating massive audit log CSVs?",
+        "expected_documentation": "audit_log_export_failure.md",
+        "retrieved_files": [
+            "audit_log_export_failure.md",
+            "audit_log_export_failure.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'audit_log_export_failure.md' in ['audit_log_export_failure.md', 'audit_log_export_failure.md']",
+        "gemini_answer": "To prevent gateway timeouts and memory exhaustion when generating massive audit log CSVs, you should address the `EXPORT_ERR_MEMORY_OVERFLOW` issue.\n\nHere is the step-by-step troubleshooting guide:\n\n**Issue: Memory Exhaustion and Gateway Timeouts during Audit Log Exports**\n\n*   **Symptom:** Exporting CSV or PDF audit logs causes the worker node to consume 100% RAM and crash, often leading to 504 gateway spikes.\n*   **Root Cause:** The backend code is attempting to load millions of audit rows into memory at once instead of using database cursor pagination.\n*   **Step-by-Step Resolution:**\n    1.  Check system RAM usage during exports using `htop`.\n    2.  Instruct users to narrow down the date range filter to chunks of 30 days or less.\n    3.  Ensure pagination chunk size is set to 5,000 records in `exports/tasks.py`.\n\n*   **Source File:** `audit_log_export_failure.md`"
+    },
+    {
+        "id": "Q40",
+        "question": "Third-party partner integrations are failing with WEBHOOK_ERR_INVALID_SIGNATURE errors. What is the cause?",
+        "expected_documentation": "third_party_webhook_integration.md",
+        "retrieved_files": [
+            "third_party_webhook_integration.md",
+            "third_party_webhook_integration.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'third_party_webhook_integration.md' in ['third_party_webhook_integration.md', 'third_party_webhook_integration.md']",
+        "gemini_answer": "It appears you're encountering `WEBHOOK_ERR_INVALID_SIGNATURE` errors with third-party partner integrations. This typically indicates an issue with how the webhook signature is being verified.\n\nHere's a step-by-step troubleshooting guide based on our internal documentation:\n\n**Error: `WEBHOOK_ERR_INVALID_SIGNATURE`**\n*   **Source:** `third_party_webhook_integration.md`\n*   **Symptom:** Webhook endpoints return a 400 Bad Request with an invalid signature header error.\n*   **Root Cause:** The raw request body stream was modified or parsed as JSON before the HMAC SHA256 signature hash was computed.\n\n**Step-by-Step Resolution:**\n\n1.  **Verify Signature Header:** Verify that the incoming request header `X-Signature-Sha256` matches the computed HMAC hex digest.\n2.  **Raw Request Body:** Ensure your web framework middleware reads the **raw binary request body** before json decoding.\n3.  **Shared Secret Key:** Check if the shared secret key was updated on the partner's management portal."
+    },
+    {
+        "id": "Q41",
+        "question": "Why are inbound webhook payloads returning 400 Bad Request signature mismatch errors?",
+        "expected_documentation": "third_party_webhook_integration.md",
+        "retrieved_files": [
+            "third_party_webhook_integration.md",
+            "third_party_webhook_integration.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'third_party_webhook_integration.md' in ['third_party_webhook_integration.md', 'third_party_webhook_integration.md']",
+        "gemini_answer": "It appears you are encountering `WEBHOOK_ERR_INVALID_SIGNATURE` errors where inbound webhook payloads are returning 400 Bad Request due to signature mismatches.\n\nHere's a step-by-step troubleshooting guide to resolve this issue:\n\n**Error: `WEBHOOK_ERR_INVALID_SIGNATURE`**\n*   **Symptom:** Webhook endpoints return a 400 Bad Request with an invalid signature header error.\n*   **Root Cause:** The raw request body stream was modified or parsed as JSON before the HMAC SHA256 signature hash was computed.\n\n**Step-by-Step Resolution:**\n1.  Verify that the incoming request header `X-Signature-Sha256` matches the computed HMAC hex digest.\n2.  Ensure your web framework middleware reads the **raw binary request body** before JSON decoding.\n3.  Check if the shared secret key was updated on the partner's management portal.\n\n*(Source: `third_party_webhook_integration.md`)*"
+    },
+    {
+        "id": "Q42",
+        "question": "How do I debug cryptographic HMAC signature verification issues on incoming webhook endpoints?",
+        "expected_documentation": "third_party_webhook_integration.md",
+        "retrieved_files": [
+            "third_party_webhook_integration.md",
+            "third_party_webhook_integration.md"
+        ],
+        "passed": true,
+        "notes": "Retrieval match successful. Found 'third_party_webhook_integration.md' in ['third_party_webhook_integration.md', 'third_party_webhook_integration.md']",
+        "gemini_answer": "To debug cryptographic HMAC signature verification issues on incoming webhook endpoints, please follow these steps:\n\n**Source:** `third_party_webhook_integration.md`\n\n**Symptom:** Webhook endpoints return a 400 Bad Request with an invalid signature header error.\n**Root Cause:** The raw request body stream was modified or parsed as JSON before the HMAC SHA256 signature hash was computed.\n\n**Step-by-Step Resolution:**\n\n1.  **Verify Signature Header:** Check that the incoming request header `X-Signature-Sha256` matches the computed HMAC hex digest.\n2.  **Raw Body Reading:** Ensure your web framework middleware reads the **raw binary request body** before any JSON decoding or parsing occurs.\n3.  **Shared Secret Key:** Verify if the shared secret key was updated on the partner's management portal."
+    }
+]
