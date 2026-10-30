@@ -75,3 +75,9 @@ Executing the master script will automatically verify dependencies, build the ve
 ```bash
 python main.py
 ```
+
+
+### Step 4: Interactive Streamlit App (`app.py`)
+   - **Golden Test Runner:** Select and simulate any of the 42 test cases directly from the sidebar via explicit action controls.
+   - **Dynamic KB Generator:** Generate synthetic, highly specific support tickets on the fly using Gemini to test edge-case retrieval precision.
+   - **Live 3D Semantic Vector Visualizer:** Embedded interactive Plotly 3D scatter plot ($n\_components=3$) projecting the 384-D vector space via PCA. Visualizes document clusters, exact query coordinates (star marker), and dashed retrieval radius vectors connecting the query to its $K=5$ nearest neighbors.

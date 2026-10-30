@@ -4,3 +4,7 @@ numpy>=1.20.0
 google-genai>=0.1.0
 python-dotenv>=1.0.0
 streamlit>=1.25.0
+plotly>=7.1.0
+matplotlib==3.11.2
+seaborn==0.13.2
+scikit-learn==1.9.1
