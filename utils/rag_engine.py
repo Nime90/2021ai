@@ -20,10 +20,10 @@ import faiss
 from sentence_transformers import SentenceTransformer
 from google import genai
 from google.genai import types
-from dotenv import load_dotenv  # <--- 1. Import load_dotenv
+from dotenv import load_dotenv  
 
 # Load environment variables from a local .env file if it exists
-load_dotenv()                   # <--- 2. Execute load_dotenv()
+load_dotenv()                  
 
 # Define paths to our saved index artifacts
 VECTOR_INDEX_FILE = "utils/faiss_index.bin"
@@ -58,7 +58,7 @@ class SupportRAGEngine:
         self.gemini_client = genai.Client()
         print("[+] RAG Engine successfully initialized and ready.")
 
-    def retrieve_context(self, query: str, top_k: int = 2):
+    def retrieve_context(self, query: str, top_k: int = 5):
         """
         Takes a user query, embeds it, and searches the FAISS index to find 
         the top_k most relevant document chunks.
@@ -76,9 +76,9 @@ class SupportRAGEngine:
                     "score": float(distances[0][i])
                 })
 
-        return retrieved_chunks
+        return retrieved_chunks, distances
 
-    def generate_answer(self, query: str):
+    def generate_answer(self, query: str, top_k: int = 5):
         """
         Runs the full RAG pipeline:
         1. Retrieves relevant context chunks.
@@ -86,7 +86,25 @@ class SupportRAGEngine:
            technical back-office assistant.
         3. Calls Gemini to formulate a structured troubleshooting guide.
         """
-        contexts = self.retrieve_context(query, top_k=5)
+        contexts, distances = self.retrieve_context(query, top_k=top_k)
+
+        # --- DISTANCE THRESHOLD GUARDRAIL ---
+        # If the closest chunk's L2 distance is too high, the query is off-topic.
+        # Adjust threshold based on the embedding distribution.
+        DISTANCE_THRESHOLD = 1.45
+        if distances is not None and len(distances[0]) > 0:
+            closest_distance = float(distances[0][0])
+            if closest_distance > DISTANCE_THRESHOLD:
+                return {
+                    "answer": (
+                        "⚠️ **Access Denied / Out of Scope:** I am a specialized technical support assistant. "
+                        "My knowledge base strictly covers internal runbooks (Auth, Databases, S3, Webhooks, SSL, etc.). "
+                        "Your query does not match any known technical documentation in our system."
+                    ),
+                    "sources": [],
+                    "retrieved_context_snippets": []
+                }
+
 
         context_block = ""
         sources_used = set()
@@ -115,7 +133,9 @@ class SupportRAGEngine:
         Support User Query:
         {query}
 
-        Provide a clear, step-by-step troubleshooting guide based on the context above. Mention the source file used.
+        Provide a clear, step-by-step troubleshooting guide based ONLY on the context above. 
+        ###IMPORTANT: If you do not find the requested infomation in the context, explicitly state that you do not have the information in your current internal knowledge base.
+        Mention the source file used.
         """
 
         try:
@@ -142,7 +162,7 @@ if __name__ == "__main__":
     engine = SupportRAGEngine()
     sample_query = "Users are getting logged out unexpectedly with a 401 error. What should I do?"
     print(f"\n[Test Query]: {sample_query}\n")
-    result = engine.generate_answer(sample_query)
+    result = engine.generate_answer(sample_query, 5)
     print("[Generated Response from Gemini]:")
     print(result["answer"])
     print(f"\n[Sources Cited]: {result['sources']}")
