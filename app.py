@@ -1,5 +1,5 @@
 """=============================================================================
-STEPS 5 & 6: INTERACTIVE STREAMLIT CHAT APPLICATION (with Test Dataset Selector)
+INTERACTIVE STREAMLIT CHAT APPLICATION (with Test Dataset Selector)
 =============================================================================
 This script runs a web-based chat interface for our Back-Office Support AI.
 Includes an option to select from the evaluation test cases in 'test_dataset.json'

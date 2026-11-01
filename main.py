@@ -85,7 +85,7 @@ if __name__ == "__main__":
     #"How do I resolve container exit code 137 OOM kills?"
     
     print(f"[Query]: {sample_query}\n")
-    result = engine.generate_answer(sample_query)
+    result = engine.generate_answer(sample_query, top_k=5)
     
     print("[Gemini AI Generated Response]:")
     print(result["answer"])

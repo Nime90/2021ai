@@ -2,3 +2,5 @@
 *.ipynb
 *.venv313
 dev_app.py
+*.pptx
+*.pyc

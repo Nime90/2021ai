@@ -134,7 +134,7 @@ class SupportRAGEngine:
         {query}
 
         Provide a clear, step-by-step troubleshooting guide based ONLY on the context above. 
-        ###IMPORTANT: If you do not find the requested infomation in the context, explicitly state that you do not have the information in your current internal knowledge base.
+        ###IMPORTANT: If you do not find the requested information in the context, explicitly state that you do not have the information in your current internal knowledge base.
         Mention the source file used.
         """
 

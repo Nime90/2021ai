@@ -17,67 +17,106 @@ An intelligent, LLM-powered technical guidance system designed to empower intern
 ## 📂 Project Directory Structure
 
 ```text
-your_project_folder/
-├── knowledge_base/               # Technical markdown documentation corpus (.md)
-│   ├── auth_troubleshooting.md
-│   ├── database_performance.md
-│   ├── api_rate_limiting.md
-│   ├── billing_subscription_errors.md
-│   ├── frontend_ui_caching.md
-│   └── container_deployment.md
-├── utils/                        # Core backend utility scripts
-│   ├── ingest_docs.py            # Parses and chunks raw markdown files
-│   ├── build_vector_index.py     # Generates embeddings and builds the FAISS index
-│   ├── rag_engine.py             # Core retrieval and Gemini LLM generation pipeline
-│   └── evaluate_rag.py           # Automated evaluation suite (24 golden test cases)
-├── .env                          # Local environment variables (GEMINI_API_KEY)
-├── requirements.txt              # Minimal project dependencies
-├── test_dataset.json             # Golden test dataset containing 24 validation queries
-├── evaluation_results.json       # Generated audit logs & pass/fail outputs
-├── main.py                       # Master orchestrator & evaluation manager
-└── README.md                     # Project documentation & execution guide
+2021ai/
+├── .env                              # Local secrets/configuration such as GEMINI_API_KEY
+├── .gitignore                        # Git exclusions for local environment and generated artifacts
+├── app.py                            # Main Streamlit user-facing chat application for production/demo use
+├── main.py                           # Master orchestrator that initializes the pipeline and runs evaluation checks
+├── requirements.txt                  # Python dependencies required to run the project
+├── test_dataset.json                 # Benchmark dataset used to evaluate retrieval quality and answer accuracy
+├── evaluation_results.json           # Saved evaluation output with pass/fail metrics and test summaries
+├── knowledge_base/                   # Internal documentation corpus used as the RAG knowledge source
+│   ├── api_rate_limiting.md         
+│   ├── audit_log_export_failure.md  
+│   ├── auth_troubleshooting.md        
+│   ├── background_worker_queue.md    
+│   ├── billing_subscription_errors.md 
+│   ├── container_deployment.md       
+│   ├── database_performance.md      
+│   ├── email_notification_delivery.md 
+│   ├── file_storage_upload_errors.md 
+│   ├── frontend_ui_caching.md        
+│   ├── ssl_certificate_expiry.md   
+│   └── third_party_webhook_integration.md 
+├── utils/                            # Supporting scripts for ingestion, indexing, retrieval, and evaluation
+│   ├── ingest_docs.py                # Parses and chunks documentation into searchable knowledge units
+│   ├── build_vector_index.py         # Embeds chunks and builds the FAISS vector index
+│   ├── rag_engine.py                 # Retrieval + generation logic using FAISS and Gemini
+│   ├── evaluate_rag.py               # Runs the benchmark suite against the golden dataset
+│   ├── threshold_finder.py           # Identifies meaningful distance thresholds for retrieval tuning
+│   ├── visualize_clusters.py          # Generates 2D semantic cluster visualizations
+│   └── visualize_clusters_3d.py       # Generates 3D semantic cluster visualizations
+│
+└── README.md                         # Project documentation and usage guide
 ```
+
+> Note: The repository contains both the production application (`app.py`) and supporting experimentation files (`dev_app.py`, `dev.ipynb`), as well as generated outputs used for evaluation and visualization.
 
 ---
 
 ## 🔍 Detailed Script Breakdown
 
 ### 1. `utils/ingest_docs.py` (Data Pipeline)
-* **What it does:** Scans the `knowledge_base/` folder for all technical markdown files. It splits them logically by structural headers (e.g., `##`) to ensure clean semantic chunking, outputting structured data dictionaries containing text blocks and source metadata.
+* **What it does:** Scans the `knowledge_base/` folder, reads the markdown knowledge base, and chunks the content into smaller, semantically meaningful units. It preserves source metadata so answers can be traced back to the original documentation.
 
 ### 2. `utils/build_vector_index.py` (Vector Indexing)
-* **What it does:** Feeds the text chunks into the local `all-MiniLM-L6-v2` embedding model to generate numerical vectors. It constructs an in-memory FAISS index (`faiss_index.bin`) and serializes the chunk metadata (`chunk_metadata.pkl`) to disk for rapid semantic lookups.
+* **What it does:** Takes the chunked documentation, converts each chunk into embedding vectors using the local `all-MiniLM-L6-v2` model, and creates a FAISS index for fast similarity search. It also stores metadata needed to map retrieved chunks back to their source files.
 
 ### 3. `utils/rag_engine.py` (Retrieval & Generation Core)
-* **What it does:** Loads the FAISS index and local embedding model. When a user or support agent submits a query, it embeds the question, queries FAISS for the top matching document chunks, builds a strict grounding context prompt, and queries the Gemini API (`gemini-2.5-flash`) with low temperature to guarantee factual, citation-backed answers without hallucination.
+* **What it does:** Loads the FAISS index and embedding model, embeds the user query, retrieves the closest documents, and sends the most relevant context to Gemini. This keeps the response grounded in internal documentation instead of relying on the model to invent support guidance.
 
 ### 4. `utils/evaluate_rag.py` (Validation & Testing Harness)
-* **What it does:** Programmatically tests the system against the 24 golden test cases in `test_dataset.json`. It evaluates retrieval accuracy, guardrail refusal behavior for out-of-scope inquiries, and multi-source reasoning, automatically exporting detailed audit logs and pass/fail metrics into `evaluation_results.json`.
+* **What it does:** Runs the golden benchmark suite from `test_dataset.json` to measure retrieval accuracy and answer quality. It compares expected documentation targets against retrieved sources and records the results in `evaluation_results.json` for review.
+
+### 5. `main.py` (System Orchestrator)
+* **What it does:** Acts as the project entry point. It verifies the FAISS index exists, builds it if missing, checks whether evaluation results are already available, and runs a smoke test to confirm the RAG pipeline is operational.
+
+### 6. `app.py` (Interactive User Interface)
+* **What it does:** Provides the main Streamlit-based support assistant interface. It lets users ask troubleshooting questions, explore retrieved sources, and test the system with benchmark prompts from the sidebar.
+
+### 7. Visualization Scripts (`threshold_finder.py`, `visualize_clusters.py`, `visualize_clusters_3d.py`)
+* **What it does:** Help analyze embedding space behavior, identify retrieval thresholds, and visualize document clusters in 2D/3D. These outputs assist with tuning the retrieval system and validating how the knowledge base is organized semantically.
 
 ---
 
 ## 🚀 Setup & Execution Guide
 
 ### Step 1: Install Dependencies
-Open your terminal and install the required project dependencies:
+Open a terminal in the project root and install the required Python packages:
 ```bash
 pip install -r requirements.txt
 ```
 
+This installs the embedding model stack, FAISS search engine, Google GenAI client, Streamlit app tooling, and visualization/evaluation dependencies needed for the project.
+
 ### Step 2: Configure Environment Variables
-Create a `.env` file in the root folder of your project and add your Gemini API key:
+Create a `.env` file in the root directory and add your Gemini API key:
 ```env
 GEMINI_API_KEY=your_actual_gemini_api_key_here
 ```
 
+This key is required so the RAG engine can call the Gemini model for grounded answer generation.
+
 ### Step 3: Run the Master Orchestrator (`main.py`)
-Executing the master script will automatically verify dependencies, build the vector index if missing, check for evaluation logs, and run/display test metrics:
+From the project root, execute:
 ```bash
 python main.py
 ```
 
+This script performs the startup checks, builds the vector index if it is missing, evaluates whether the cached benchmark results exist, and runs a live smoke test through the RAG engine.
 
-### Step 4: Interactive Streamlit App (`app.py`)
-   - **Golden Test Runner:** Select and simulate any of the 42 test cases directly from the sidebar via explicit action controls.
-   - **Dynamic KB Generator:** Generate synthetic, highly specific support tickets on the fly using Gemini to test edge-case retrieval precision.
-   - **Live 3D Semantic Vector Visualizer:** Embedded interactive Plotly 3D scatter plot ($n\_components=3$) projecting the 384-D vector space via PCA. Visualizes document clusters, exact query coordinates (star marker), and dashed retrieval radius vectors connecting the query to its $K=5$ nearest neighbors.
+### Step 4: Start the Streamlit App (`app.py`)
+Launch the user interface with:
+```bash
+streamlit run app.py
+```
+
+This opens the support assistant, where users can:
+- ask troubleshooting questions in natural language
+- inspect the documentation sources used for the answer
+- select benchmark cases from the sidebar for live evaluation
+- generate synthetic support queries from the knowledge base
+- view semantic cluster visualizations of the retrieval space
+
+
+---
