@@ -4,3 +4,4 @@
 dev_app.py
 *.pptx
 *.pyc
+.devcontainer
